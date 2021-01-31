@@ -21,16 +21,12 @@ extern "C" void app_main() {
             (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
     fflush(stdout);
 
-    static const char *pcTextForTask1 = "Task 1 is running\r\n";
-    static const char *pcTextForTask2 = "Task 2 is running\r\n";
+    static const char *pcTextForTask1 = "Task LOW is running\r\n";
+    static const char *pcTextForTask2 = "Task HIGH is running\r\n";
     TaskHandle_t taskHandle1 = NULL;
     TaskHandle_t taskHandle2 = NULL;
     /* Create the two tasks. */
-    xTaskCreate( sampleTask, "Task 1", 1000, (void*)pcTextForTask1, 1, &taskHandle1,);
-    xTaskCreate( sampleTask, "Task 2", 1000, (void*)pcTextForTask2, 1, &taskHandle2,);
+    xTaskCreatePinnedToCore( task_priority, "Low Priority", 1000, (void*)pcTextForTask1, 1, &taskHandle1, 0);
+    xTaskCreatePinnedToCore( task_priority, "High Priority", 1000, (void*)pcTextForTask2, configMAX_PRIORITIES, &taskHandle2, 0);
     /* Start the scheduler so the tasks start executing. */
-    vTaskStartScheduler();
-
-    for(;;);
-    //}
 }
