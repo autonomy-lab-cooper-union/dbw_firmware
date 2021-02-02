@@ -46,7 +46,7 @@ void cantask( void *pvParamters){
         sendMessage();
         checkMessage();
         esp_task_wdt_reset();
-        vTaskDelay(500/portTICK_PERIOD_MS);
+        vTaskDelay(250/portTICK_PERIOD_MS);
     }
 
 }

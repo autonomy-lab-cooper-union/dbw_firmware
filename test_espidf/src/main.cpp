@@ -28,6 +28,6 @@ extern "C" void app_main() {
     /* Create the two tasks. */
     //xTaskCreatePinnedToCore( task_priority, "Low Priority", 1000, (void*)pcTextForTask1, 1, &taskHandle1, 0);
     //xTaskCreatePinnedToCore( task_priority, "High Priority", 1000, (void*)pcTextForTask2, configMAX_PRIORITIES, &taskHandle2, 0);
-    xTaskCreatePinnedToCore( cantask, "Cantask", 1000, (void*)pcTextForTask1, 1, &taskHandle1, 0);
+    xTaskCreatePinnedToCore( cantask, "Cantask", 2000, (void*)pcTextForTask1, 1, &taskHandle1, 0);
     /* Start the scheduler so the tasks start executing. */
 }
