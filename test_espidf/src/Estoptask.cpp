@@ -23,6 +23,8 @@ void checkCAN() {
 void estoptask(void *pvParameters){
   for(;;){
     checkCAN();
+    fprintf(stderr, "one loop\n");
     esp_task_wdt_reset();
+    vTaskDelay(250/portTICK_PERIOD_MS);
   }
 }
