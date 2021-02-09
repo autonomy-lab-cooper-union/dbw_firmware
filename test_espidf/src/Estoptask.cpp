@@ -16,14 +16,14 @@ void checkCAN() {
     printf("New %s frame", (es_rx.FIR.B.FF==CAN_frame_std ? "standard" : "extended"));
     if(es_rx.FIR.B.RTR==CAN_RTR) printf(" RTR");
     printf(" from 0x%08x, DLC %d\r\n",es_rx.MsgID,  es_rx.FIR.B.DLC);
-    
-    for(int i = 0; i < 8; i++) printf("%c\t", (char)es_rx.data.u8[i]);
+    printf("Estoptask received: ");
+    for(int i = 0; i < 8; i++) printf("%c", (char)es_rx.data.u8[i]);
+    printf("\n");
   }
 }
 void estoptask(void *pvParameters){
   for(;;){
     checkCAN();
-    fprintf(stderr, "one loop\n");
     esp_task_wdt_reset();
     vTaskDelay(250/portTICK_PERIOD_MS);
   }

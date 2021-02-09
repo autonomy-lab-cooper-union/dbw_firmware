@@ -5,5 +5,7 @@
 #include "task_priority_test.h"
 #include "Cantask.h"
 #include "Estoptask.h"
+#include "Housetask.h"
+#include "Watchtask.h"
 
 #endif

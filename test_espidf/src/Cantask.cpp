@@ -14,7 +14,7 @@
 //Occupied stack size is about 1500 bytes
 
 CAN_device_t CAN_cfg;
-CAN_frame_t tx_frame, rx_frame, es_frame;
+CAN_frame_t tx_frame, rx_frame, es_frame, h_frame, w_frame;
 char i = 33;
 
 void sendToEstop(){
@@ -24,20 +24,28 @@ void sendToEstop(){
 
 void sendMessage() {
   tx_frame.data.u8[7] = i;
-  printf("sent %d, %.8s\n", i, tx_frame.data.u8);
+  //printf("sent %d, %.8s\n", i, tx_frame.data.u8);
   ESP32Can.CANWriteFrame(&tx_frame);
 }
 
 void checkMessage() {
   if(xQueueReceive(CAN_cfg.rx_queue,&rx_frame, 0)==pdTRUE){
     //temporary measure; normally we analyze rx_frame and send it to the task that needs it
-    es_frame = rx_frame;
-    sendToEstop();
+    std::string Message;
+    for(int i = 0; i < 8; i++){
+      //puts the message into a string data-type
+      Message.push_back((char)rx_frame.data.u8[i]);
+    }
+    if(Message.compare("EMERSTOP") == 0){
+      es_frame = rx_frame;
+      sendToEstop();
+    }
     printf("New %s frame", (rx_frame.FIR.B.FF==CAN_frame_std ? "standard" : "extended"));
     if(rx_frame.FIR.B.RTR==CAN_RTR) printf(" RTR");
     printf(" from 0x%08x, DLC %d\r\n",rx_frame.MsgID,  rx_frame.FIR.B.DLC);
-    
-    for(int i = 0; i < 8; i++) printf("%c\t", (char)rx_frame.data.u8[i]);
+    printf("Cantask received: ");
+    for(int i = 0; i < 8; i++) printf("%c", (char)rx_frame.data.u8[i]);
+    printf("\n");
   }
 }
 
