@@ -7,8 +7,14 @@
 #include <ESP32CAN.h>
 #include <CAN_config.h>
 #include <esp_task_wdt.h>
+#include "MessageID.h"
 
 CAN_frame_t es_rx;
+
+void emergencyStop(){
+  //Dummy function for now
+  printf("EMERGENCY STOP\n");
+}
 
 void checkCAN() {
   if(xQueueReceive(canToEStop,&es_rx, 0)==pdTRUE){
@@ -19,6 +25,14 @@ void checkCAN() {
     printf("Estoptask received: ");
     for(int i = 0; i < 8; i++) printf("%c", (char)es_rx.data.u8[i]);
     printf("\n");
+    //selects task based on message ID
+    switch (es_rx.MsgID){
+      case es_actions::e_stop:
+        emergencyStop();
+        break;
+      case es_actions::last_estop_action:
+        break;
+    }
   }
 }
 void estoptask(void *pvParameters){

@@ -9,17 +9,20 @@
 #include <CAN_config.h>
 #include <freertos/queue.h>
 #include "queues.h"
+#include "MessageID.h"
 
 //Minimum free stack space using watermark function uxTaskGetStackHighWaterMark() was 488 bytes
 //Occupied stack size is about 1500 bytes
 
 CAN_device_t CAN_cfg;
-CAN_frame_t tx_frame, rx_frame, es_frame, h_frame, w_frame;
+CAN_frame_t tx_frame, rx_frame;
 char i = 33;
 
-void sendToEstop(){
+QueueHandle_t TaskQueue;
+
+void sendToTask(){
   //portMAX_DELAY means you wait indefinitely until the queue is able to receive messages; the third parameter is how long you wait is th queue is full
-  xQueueSend(canToEStop, &es_frame, portMAX_DELAY);
+  xQueueSend(TaskQueue, &rx_frame, portMAX_DELAY);
 }
 
 void sendMessage() {
@@ -36,9 +39,21 @@ void checkMessage() {
       //puts the message into a string data-type
       Message.push_back((char)rx_frame.data.u8[i]);
     }
-    if(Message.compare("EMERSTOP") == 0){
+    /*if(Message.compare("EMERSTOP") == 0){
       es_frame = rx_frame;
       sendToEstop();
+    }*/
+    if (rx_frame.MsgID >= ESTOP_RANGE_START && rx_frame.MsgID <= ESTOP_RANGE_END){
+      TaskQueue = canToEStop;
+      sendToTask();
+    }
+    else if(rx_frame.MsgID >= HOUSE_RANGE_START && rx_frame.MsgID <=HOUSE_RANGE_END){
+      TaskQueue = canToHouse;
+      sendToTask();
+    }
+    else if(rx_frame.MsgID >= WATCH_RANGE_START && rx_frame.MsgID <=WATCH_RANGE_END){
+      TaskQueue = canToWatch;
+      sendToTask();
     }
     printf("New %s frame", (rx_frame.FIR.B.FF==CAN_frame_std ? "standard" : "extended"));
     if(rx_frame.FIR.B.RTR==CAN_RTR) printf(" RTR");

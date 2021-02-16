@@ -10,6 +10,8 @@
 
 //in the header file, we had this as extern, so we needed to make the queue declaration global.
 QueueHandle_t canToEStop;
+QueueHandle_t canToWatch;
+QueueHandle_t canToHouse;
 
 extern "C" void app_main() {
     //for (;;) {
