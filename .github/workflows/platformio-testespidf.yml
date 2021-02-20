@@ -6,14 +6,13 @@ on:
     paths:
     - 'test_espidf/*'
 
+defaults:
+  run:
+    working-directory: test_espidf
+
 jobs:
   build:
-
     runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        example: [test_espidf/src/]
-
     steps:
     - uses: actions/checkout@v2
     - name: Cache pip
@@ -33,7 +32,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install --upgrade platformio
+    - name: Install library dependencies
+      run: pio lib install
     - name: Run PlatformIO
-      run: pio ci --board=esp32dev
+      run: pio run -e esp32dev
       env:
-        PLATFORMIO_CI_SRC: ${{ matrix.example }}
+        PLATFORMIO_BUILD_CACHE_DIR: ~/.platformio/test_espidf_cache
