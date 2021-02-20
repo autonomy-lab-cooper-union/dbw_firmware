@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-    - 'test_espidf/*'
+    - 'test_espidf/**'
 
 defaults:
   run:
