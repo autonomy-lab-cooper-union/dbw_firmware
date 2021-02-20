@@ -18,9 +18,7 @@ CAN_device_t CAN_cfg;
 CAN_frame_t tx_frame, rx_frame;
 char i = 33;
 
-QueueHandle_t TaskQueue;
-
-void sendToTask(){
+void sendToTask(QueueHandle_t TaskQueue){
   //portMAX_DELAY means you wait indefinitely until the queue is able to receive messages; the third parameter is how long you wait is th queue is full
   xQueueSend(TaskQueue, &rx_frame, portMAX_DELAY);
 }
@@ -44,16 +42,13 @@ void checkMessage() {
       sendToEstop();
     }*/
     if (rx_frame.MsgID >= ESTOP_RANGE_START && rx_frame.MsgID <= ESTOP_RANGE_END){
-      TaskQueue = canToEStop;
-      sendToTask();
+      sendToTask(canToEStop);
     }
     else if(rx_frame.MsgID >= HOUSE_RANGE_START && rx_frame.MsgID <=HOUSE_RANGE_END){
-      TaskQueue = canToHouse;
-      sendToTask();
+      sendToTask(canToHouse);
     }
     else if(rx_frame.MsgID >= WATCH_RANGE_START && rx_frame.MsgID <=WATCH_RANGE_END){
-      TaskQueue = canToWatch;
-      sendToTask();
+      sendToTask(canToWatch);
     }
     printf("New %s frame", (rx_frame.FIR.B.FF==CAN_frame_std ? "standard" : "extended"));
     if(rx_frame.FIR.B.RTR==CAN_RTR) printf(" RTR");
