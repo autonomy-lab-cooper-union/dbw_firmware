@@ -34,6 +34,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install --upgrade platformio
     - name: Run PlatformIO
-      run: pio ci --board=esp32dev
+      run: pio ci --board=esp32dev -Itestesp_idf/include
       env:
         PLATFORMIO_CI_SRC: ${{ matrix.example }}
