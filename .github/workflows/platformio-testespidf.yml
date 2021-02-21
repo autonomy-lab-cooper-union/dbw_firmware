@@ -3,12 +3,8 @@ name: PlatformIO CI
 on:
   workflow_dispatch:
   push:
-    paths:
-    - 'test_espidf/**'
-
-defaults:
-  run:
-    working-directory: test_espidf
+    paths-ignore:
+    - 'test_projects/**'
 
 jobs:
   build:
@@ -37,4 +33,4 @@ jobs:
     - name: Run PlatformIO
       run: pio run -e esp32dev
       env:
-        PLATFORMIO_BUILD_CACHE_DIR: ~/.platformio/test_espidf_cache
+        PLATFORMIO_BUILD_CACHE_DIR: ~/.platformio/dbwfirmware_cache
