@@ -41,13 +41,13 @@ void checkMessage() {
       es_frame = rx_frame;
       sendToEstop();
     }*/
-    if (rx_frame.MsgID >= ESTOP_RANGE_START && rx_frame.MsgID <= ESTOP_RANGE_END){
+    if (rx_frame.MsgID > taskID::ESTOP_RANGE_START && rx_frame.MsgID < taskID::ESTOP_RANGE_END){
       sendToTask(canToEStop);
     }
-    else if(rx_frame.MsgID >= HOUSE_RANGE_START && rx_frame.MsgID <=HOUSE_RANGE_END){
+    else if(rx_frame.MsgID > taskID::HOUSE_RANGE_START && rx_frame.MsgID < taskID::HOUSE_RANGE_END){
       sendToTask(canToHouse);
     }
-    else if(rx_frame.MsgID >= WATCH_RANGE_START && rx_frame.MsgID <=WATCH_RANGE_END){
+    else if(rx_frame.MsgID >  taskID::WATCH_RANGE_START && rx_frame.MsgID < taskID::WATCH_RANGE_END){
       sendToTask(canToWatch);
     }
     printf("New %s frame", (rx_frame.FIR.B.FF==CAN_frame_std ? "standard" : "extended"));
