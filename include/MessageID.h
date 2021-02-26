@@ -3,22 +3,31 @@
 
 //if (rx_frame.MsgID >= ESTOP_RANGE_START && rx_frame.MsgID <= ESTOP_RANGE_END) set queue to canToEStop
 
-enum CAN_MSGS {
-    ESTOP_RANGE_START   = 0x400,
-    ESTOP_RANGE_END     = 0x7FF,
-    HOUSE_RANGE_START   = 0x800,
-    HOUSE_RANGE_END     = 0xBFF,
-    WATCH_RANGE_START   = 0xC00,
-    WATCH_RANGE_END     = 0xFFF
+// this should be moved somewhere else
+#define NODE_BRAKE 0
+#define NODE_STEER 1
+#define NODE_ACCEL 2
+#define NODE_MISC  3
+#define THIS_NODE NODE_BRAKE
+
+enum canmsg_ID  {
+    ADMIN_RANGE_START   = 0x0000,
+    ADMIN_RANGE_END     = 0x03FF,
+    ESTOP_RANGE_START   = 0x0400,
+        MSG_ESTOP,
+    ESTOP_RANGE_END     = 0x07FF,
+    HOUSE_RANGE_START   = 0x0800,
+    HOUSE_RANGE_END     = 0x0BFF,
+    WATCH_RANGE_START   = 0x0C00,
+    WATCH_RANGE_END     = 0x0FFF,
+    BRK_RANGE_START     = 0x1000,
+    BRK_RANGE_END       = 0x13FF,
+    STR_RANGE_START     = 0x1400,
+    STR_RANGE_END       = 0x17FF,
+    SPD_RANGE_START     = 0x1800,
+    SPD_RANGE_END       = 0x1BFF,
+    MSC_RANGE_START     = 0x1C00,
+    MSC_RANGE_END       = 0x1FFF
 };
-
-enum es_actions {e_stop = ESTOP_RANGE_START, last_estop_action = ESTOP_RANGE_END};
-enum h_actions {first_h_action = HOUSE_RANGE_START};
-enum w_actions {first_w_action = WATCH_RANGE_START};
-//Within Estoptask
-//es_actions temp = rx_frame.MsgID;
-//switch(temp){case e_stop: ...}
-//get the message id and see if it lies in a certain range. Estop task looks at the number and matches it to some action. 
-
 
 #endif
