@@ -11,6 +11,20 @@
 #include "queues.h"
 #include "MessageID.h"
 
+#if THIS_NODE == NODE_BRAKE
+  #define SPRANGE_START BRK_RANGE_START
+  #define SPRANGE_END   BRK_RANGE_END
+#elif THIS_NODE == NODE_STEER
+  #define SPRANGE_START STR_RANGE_START
+  #define SPRANGE_END   STR_RANGE_END
+#elif THIS_NODE == NODE_ACCEL
+  #define SPRANGE_START SPD_RANGE_START
+  #define SPRANGE_END   SPD_RANGE_END
+#elif THIS_NODE == NODE_MISC
+  #define SPRANGE_START MSC_RANGE_START
+  #define SPRANGE_END   MSC_RANGE_END
+#endif
+
 //Minimum free stack space using watermark function uxTaskGetStackHighWaterMark() was 488 bytes
 //Occupied stack size is about 1500 bytes
 
@@ -41,14 +55,19 @@ void checkMessage() {
       es_frame = rx_frame;
       sendToEstop();
     }*/
-    if (rx_frame.MsgID > taskID::ESTOP_RANGE_START && rx_frame.MsgID < taskID::ESTOP_RANGE_END){
+    if (rx_frame.MsgID > canmsg_ID::ESTOP_RANGE_START && rx_frame.MsgID < canmsg_ID::ESTOP_RANGE_END){
       sendToTask(canToEStop);
     }
-    else if(rx_frame.MsgID > taskID::HOUSE_RANGE_START && rx_frame.MsgID < taskID::HOUSE_RANGE_END){
+    else if(rx_frame.MsgID > canmsg_ID::HOUSE_RANGE_START && rx_frame.MsgID < canmsg_ID::HOUSE_RANGE_END){
       sendToTask(canToHouse);
     }
-    else if(rx_frame.MsgID >  taskID::WATCH_RANGE_START && rx_frame.MsgID < taskID::WATCH_RANGE_END){
+    else if(rx_frame.MsgID >  canmsg_ID::WATCH_RANGE_START && rx_frame.MsgID < canmsg_ID::WATCH_RANGE_END){
       sendToTask(canToWatch);
+    }
+    else if(rx_frame.MsgID >  canmsg_ID::SPRANGE_START && rx_frame.MsgID < canmsg_ID::SPRANGE_END){
+      // not implemented yet
+      // sendToTask(canToSpMsg);
+      fprintf(stderr, "triggered special range!\n");
     }
     printf("New %s frame", (rx_frame.FIR.B.FF==CAN_frame_std ? "standard" : "extended"));
     if(rx_frame.FIR.B.RTR==CAN_RTR) printf(" RTR");

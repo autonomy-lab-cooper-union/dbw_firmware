@@ -3,40 +3,31 @@
 
 //if (rx_frame.MsgID >= ESTOP_RANGE_START && rx_frame.MsgID <= ESTOP_RANGE_END) set queue to canToEStop
 
-enum taskID  {
-    SPCL_RANGE_START = 0x000,
-    #ifdef BRAKE
-        //brake specific task names here
-    #elif STEERING
-        //steering specific task names here
-    #elif SPEED
-        //speed specific task names here
-    #elif MISC
-        //miscellaneous specific task names here
-    #endif
-    SPCL_RANGE_END = 0x3FF,
-    ESTOP_RANGE_START   = 0x400,
-    e_stop,
-    ESTOP_RANGE_END     = 0x7FF,
-    HOUSE_RANGE_START   = 0x800,
-    HOUSE_RANGE_END     = 0xBFF,
-    WATCH_RANGE_START   = 0xC00,
-    WATCH_RANGE_END     = 0xFFF
-};
-//Within Estoptask
-//es_actions temp = rx_frame.MsgID;
-//switch(temp){case e_stop: ...}
-//get the message id and see if it lies in a certain range. Estop task looks at the number and matches it to some action. 
-enum nodeID {
-    BRK_RANGE_START = 0x000,
-    BRK_RANGE_END = 0x3FF,
-    STR_RANGE_START = 0x400,
-    STR_RANGE_END = 0x7FF,
-    SPD_RANGE_START = 0x800,
-    SPD_RANGE_END = 0xBFF,
-    MSC_RANGE_START = 0xC00,
-    MSC_RANGE_END = 0xFFF
-};
+// this should be moved somewhere else
+#define NODE_BRAKE 0
+#define NODE_STEER 1
+#define NODE_ACCEL 2
+#define NODE_MISC  3
+#define THIS_NODE NODE_BRAKE
 
+enum canmsg_ID  {
+    ADMIN_RANGE_START   = 0x0000,
+    ADMIN_RANGE_END     = 0x03FF,
+    ESTOP_RANGE_START   = 0x0400,
+        MSG_ESTOP,
+    ESTOP_RANGE_END     = 0x07FF,
+    HOUSE_RANGE_START   = 0x0800,
+    HOUSE_RANGE_END     = 0x0BFF,
+    WATCH_RANGE_START   = 0x0C00,
+    WATCH_RANGE_END     = 0x0FFF,
+    BRK_RANGE_START     = 0x1000,
+    BRK_RANGE_END       = 0x13FF,
+    STR_RANGE_START     = 0x1400,
+    STR_RANGE_END       = 0x17FF,
+    SPD_RANGE_START     = 0x1800,
+    SPD_RANGE_END       = 0x1BFF,
+    MSC_RANGE_START     = 0x1C00,
+    MSC_RANGE_END       = 0x1FFF
+};
 
 #endif

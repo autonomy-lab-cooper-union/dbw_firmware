@@ -27,7 +27,7 @@ void checkCAN() {
     printf("\n");
     //selects task based on message ID
     switch (es_rx.MsgID){
-      case taskID::e_stop:
+      case canmsg_ID::MSG_ESTOP:
         emergencyStop();
         break;
       default:
