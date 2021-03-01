@@ -9,7 +9,7 @@
 #include <CAN_config.h>
 
 //in the header file, we had this as extern, so we needed to make the queue declaration global.
-QueueHandle_t canToEStop;
+QueueHandle_t canToEStop, estopToCAN;
 QueueHandle_t canToWatch;
 QueueHandle_t canToHouse;
 
@@ -35,6 +35,7 @@ extern "C" void app_main() {
     TaskHandle_t taskHandle1 = NULL;
     TaskHandle_t taskHandle2 = NULL;
     canToEStop = xQueueCreate(10, sizeof(CAN_frame_t));
+    estopToCAN = xQueueCreate(10, sizeof(CAN_frame_t));
     /* Create the two tasks. */
     //xTaskCreatePinnedToCore( Function to be called, name of task, stack size, parameter to pass to function, task priority, task handle, target Core);
     //xTaskCreatePinnedToCore( task_priority, "Low Priority", 1000, (void*)pcTextForTask1, 1, &taskHandle1, 0);
