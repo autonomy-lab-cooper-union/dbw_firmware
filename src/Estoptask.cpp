@@ -18,7 +18,8 @@ void emergencyStop(){
   es_tx_frame.FIR.B.FF = CAN_frame_ext;
   es_tx_frame.MsgID = canmsg_ID::MSG_ESTOP;
   es_tx_frame.FIR.B.DLC = 8;
-  strcpy((char*)es_tx_frame.data.u8,"EMERSTOP");
+  strcpy((char*)es_tx_frame.data.u8,"EMERSTO");
+  es_tx_frame.data.u8[7] = 'P';
   xQueueSend(estopToCAN, &es_tx_frame, portMAX_DELAY);
   printf("EMERGENCY STOP\n");
 }
