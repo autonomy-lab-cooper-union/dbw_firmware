@@ -30,7 +30,7 @@
 #endif
 
 CAN_device_t CAN_cfg;
-CAN_frame_t tx_frame, rx_frame, es_frame;
+CAN_frame_t tx_frame, rx_frame, task_frame;
 char i = 33;
 
 void sendToTask(QueueHandle_t TaskQueue){
@@ -39,19 +39,15 @@ void sendToTask(QueueHandle_t TaskQueue){
 }
 
 //Checks incoming queue from Estoptask
-void checkEStop(){
-  if(xQueueReceive(estopToCAN, &es_frame, 0)==pdTRUE){
-      switch (es_frame.MsgID){
-        case canmsg_ID::MSG_ESTOP: 
-          //Broadcast ESTOP message
-          //Range of message IDs for each node is larger than range of all task IDs
-          //Listeners can figure out which task and which node if we add task message ID and starting node message ID 
-          tx_frame.MsgID = es_frame.MsgID + SPRANGE_START;
-          strcpy((char *)tx_frame.data.u8, (char *)es_frame.data.u8);
-          sendMessage();
-          break;
-        default:
-          break;
+void checkTaskQueues(){
+  for(int i = 0; i < taskQueues::numQueues; i++){
+    if(xQueueReceive(taskToCAN[i], &task_frame, 0)==pdTRUE){
+      //Broadcast  message
+      //Range of message IDs for each node is larger than range of all task IDs
+      //Listeners can figure out which task and which node if we add task message ID and starting node message ID 
+      tx_frame.MsgID = task_frame.MsgID + SPRANGE_START;
+      strcpy((char *)tx_frame.data.u8, (char *)task_frame.data.u8);
+      sendMessage();
     }
   }
 }
@@ -107,7 +103,7 @@ void cantask( void *pvParamters){
 
     for(;;){
         checkMessage();
-        checkEStop();
+        checkTaskQueues();
         esp_task_wdt_reset();
         vTaskDelay(250/portTICK_PERIOD_MS);
     }

@@ -7,7 +7,7 @@ void cantask( void *pvParamters);
 void checkMessage();
 void sendMessage();
 void sendToTask(QueueHandle_t TaskQueue);
-void checkEStop();
+void checktaskQueues();
 
 #endif
 

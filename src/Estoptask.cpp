@@ -20,7 +20,7 @@ void emergencyStop(){
   es_tx_frame.FIR.B.DLC = 8;
   strcpy((char*)es_tx_frame.data.u8,"EMERSTO");
   es_tx_frame.data.u8[7] = 'P';
-  xQueueSend(estopToCAN, &es_tx_frame, portMAX_DELAY);
+  xQueueSend(taskToCAN[taskQueues::estopToCAN], &es_tx_frame, portMAX_DELAY);
   printf("EMERGENCY STOP\n");
 }
 

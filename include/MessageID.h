@@ -2,7 +2,9 @@
 #define MESSAGE_ID_H
 
 //if (rx_frame.MsgID >= ESTOP_RANGE_START && rx_frame.MsgID <= ESTOP_RANGE_END) set queue to canToEStop
-
+//0x00000000
+//0x10000000
+//0x_____
 enum canmsg_ID  {
     ADMIN_RANGE_START   = 0x0000,
     ADMIN_RANGE_END     = 0x03FF,
