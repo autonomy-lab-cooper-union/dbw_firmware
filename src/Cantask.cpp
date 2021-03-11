@@ -30,7 +30,7 @@
 #endif
 
 CAN_device_t CAN_cfg;
-CAN_frame_t tx_frame, rx_frame, task_frame;
+CAN_frame_t tx_frame, rx_frame;
 char i = 33;
 
 void sendToTask(QueueHandle_t TaskQueue){
@@ -38,17 +38,18 @@ void sendToTask(QueueHandle_t TaskQueue){
   xQueueSend(TaskQueue, &rx_frame, portMAX_DELAY);
 }
 
-//Checks incoming queue from Estoptask
-void checkTaskQueues(){
-  for(int i = 0; i < taskQueues::numQueues; i++){
-    if(xQueueReceive(taskToCAN[i], &task_frame, 0)==pdTRUE){
-      //Broadcast  message
-      //Range of message IDs for each node is larger than range of all task IDs
-      //Listeners can figure out which task and which node if we add task message ID and starting node message ID 
-      tx_frame.MsgID = task_frame.MsgID + SPRANGE_START;
-      strcpy((char *)tx_frame.data.u8, (char *)task_frame.data.u8);
-      sendMessage();
-    }
+//Checks incoming queue that all tasks send to
+void checkAllTasks(){
+  if(xQueueReceive(UrgentMsg, &tx_frame, 0)==pdTRUE){
+    tx_frame.MsgID += SPRANGE_START;
+    sendMessage();
+  }
+  if(xQueueReceive(allTasksToCAN, &tx_frame, 0)==pdTRUE){
+    //Broadcast  message
+    //Range of message IDs for each node is larger than range of all task IDs
+    //Listeners can figure out which task and which node if we add task message ID and starting node message ID 
+    tx_frame.MsgID += SPRANGE_START;
+    sendMessage();
   }
 }
 
@@ -103,7 +104,8 @@ void cantask( void *pvParamters){
 
     for(;;){
         checkMessage();
-        checkTaskQueues();
+        checkAllTasks();
+        //This function is in the ESP32 library, resets watchdog timer
         esp_task_wdt_reset();
         vTaskDelay(250/portTICK_PERIOD_MS);
     }

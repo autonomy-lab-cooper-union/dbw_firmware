@@ -15,12 +15,10 @@ CAN_frame_t es_rx_frame, es_tx_frame;
 
 void emergencyStop(){
   //Send an emergency stop message to Cantask for broadcasting
-  es_tx_frame.FIR.B.FF = CAN_frame_ext;
   es_tx_frame.MsgID = canmsg_ID::MSG_ESTOP;
-  es_tx_frame.FIR.B.DLC = 8;
   strcpy((char*)es_tx_frame.data.u8,"EMERSTO");
   es_tx_frame.data.u8[7] = 'P';
-  xQueueSend(taskToCAN[taskQueues::estopToCAN], &es_tx_frame, portMAX_DELAY);
+  xQueueSend(UrgentMsg, &es_tx_frame, portMAX_DELAY);
   printf("EMERGENCY STOP\n");
 }
 
@@ -44,6 +42,8 @@ void checkCAN() {
   }
 }
 void estoptask(void *pvParameters){
+  es_tx_frame.FIR.B.FF = CAN_frame_ext;
+  es_tx_frame.FIR.B.DLC = 8;
   for(;;){
     checkCAN();
     esp_task_wdt_reset();
