@@ -10,6 +10,10 @@
 #include <freertos/queue.h>
 #include "queues.h"
 #include "MessageID.h"
+#include "Nodes.h"
+
+//Minimum free stack space using watermark function uxTaskGetStackHighWaterMark() was 488 bytes
+//Occupied stack size is about 1500 bytes
 
 #if THIS_NODE == NODE_BRAKE
   #define SPRANGE_START BRK_RANGE_START
@@ -25,9 +29,6 @@
   #define SPRANGE_END   MSC_RANGE_END
 #endif
 
-//Minimum free stack space using watermark function uxTaskGetStackHighWaterMark() was 488 bytes
-//Occupied stack size is about 1500 bytes
-
 CAN_device_t CAN_cfg;
 CAN_frame_t tx_frame, rx_frame;
 char i = 33;
@@ -37,9 +38,22 @@ void sendToTask(QueueHandle_t TaskQueue){
   xQueueSend(TaskQueue, &rx_frame, portMAX_DELAY);
 }
 
+//Checks incoming queue that all tasks send to
+void checkAllTasks(){
+  if(xQueueReceive(UrgentMsg, &tx_frame, 0)==pdTRUE){
+    tx_frame.MsgID += SPRANGE_START;
+    sendMessage();
+  }
+  if(xQueueReceive(allTasksToCAN, &tx_frame, 0)==pdTRUE){
+    //Broadcast  message
+    //Range of message IDs for each node is larger than range of all task IDs
+    //Listeners can figure out which task and which node if we add task message ID and starting node message ID 
+    tx_frame.MsgID += SPRANGE_START;
+    sendMessage();
+  }
+}
+
 void sendMessage() {
-  tx_frame.data.u8[7] = i;
-  //printf("sent %d, %.8s\n", i, tx_frame.data.u8);
   ESP32Can.CANWriteFrame(&tx_frame);
 }
 
@@ -64,7 +78,7 @@ void checkMessage() {
     else if(rx_frame.MsgID >  canmsg_ID::WATCH_RANGE_START && rx_frame.MsgID < canmsg_ID::WATCH_RANGE_END){
       sendToTask(canToWatch);
     }
-    else if(rx_frame.MsgID >  canmsg_ID::SPRANGE_START && rx_frame.MsgID < canmsg_ID::SPRANGE_END){
+    else if(rx_frame.MsgID >  SPRANGE_START && rx_frame.MsgID < SPRANGE_END){
       // not implemented yet
       // sendToTask(canToSpMsg);
       fprintf(stderr, "triggered special range!\n");
@@ -79,10 +93,8 @@ void checkMessage() {
 }
 
 void cantask( void *pvParamters){
-    tx_frame.FIR.B.FF = CAN_frame_std;
-    tx_frame.MsgID = 0x101;
+    tx_frame.FIR.B.FF = CAN_frame_ext;
     tx_frame.FIR.B.DLC = 8;
-    strcpy((char*)tx_frame.data.u8, "mymsg: ");
     CAN_cfg.speed=CAN_SPEED_1000KBPS;
     CAN_cfg.tx_pin_id = GPIO_NUM_25;
     CAN_cfg.rx_pin_id = GPIO_NUM_26;
@@ -91,10 +103,9 @@ void cantask( void *pvParamters){
     ESP32Can.CANInit();
 
     for(;;){
-        if (i >= 127) i = 33;
-        i++;
-        sendMessage();
         checkMessage();
+        checkAllTasks();
+        //This function is in the ESP32 library, resets watchdog timer
         esp_task_wdt_reset();
         vTaskDelay(250/portTICK_PERIOD_MS);
     }
