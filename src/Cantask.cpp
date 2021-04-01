@@ -80,7 +80,7 @@ void checkMessage() {
     }
     else if(rx_frame.MsgID >  SPRANGE_START && rx_frame.MsgID < SPRANGE_END){
       // not implemented yet
-      // sendToTask(canToSpMsg);
+      sendToTask(canToSpMsg);
       fprintf(stderr, "triggered special range!\n");
     }
     printf("New %s frame", (rx_frame.FIR.B.FF==CAN_frame_std ? "standard" : "extended"));

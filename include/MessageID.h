@@ -16,6 +16,8 @@ enum canmsg_ID  {
     WATCH_RANGE_START   = 0x0C00,
     WATCH_RANGE_END     = 0x0FFF,
     BRK_RANGE_START     = 0x1000,
+        BRK_CMD,
+        BRK_SET,
     BRK_RANGE_END       = 0x2FFF,
     STR_RANGE_START     = 0x3000,
     STR_RANGE_END       = 0x4FFF,

@@ -41,6 +41,7 @@ void checkCAN() {
     }
   }
 }
+
 void estoptask(void *pvParameters){
   es_tx_frame.FIR.B.FF = CAN_frame_ext;
   es_tx_frame.FIR.B.DLC = 8;
