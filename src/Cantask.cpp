@@ -93,8 +93,11 @@ void checkMessage() {
 }
 
 void cantask( void *pvParamters){
+    //Define the frame format: in standard, ID is 11 bits. In extended, ID is 29 bits
     tx_frame.FIR.B.FF = CAN_frame_ext;
+    //Define data length
     tx_frame.FIR.B.DLC = 8;
+    
     CAN_cfg.speed=CAN_SPEED_1000KBPS;
     CAN_cfg.tx_pin_id = GPIO_NUM_25;
     CAN_cfg.rx_pin_id = GPIO_NUM_26;

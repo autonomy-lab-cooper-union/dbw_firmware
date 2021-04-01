@@ -48,4 +48,9 @@ extern "C" void app_main() {
     xTaskCreatePinnedToCore( cantask, "Cantask", 2000, (void*)pcTextForTask1, 1, &taskHandle1, 0); //cantask
     xTaskCreatePinnedToCore( estoptask, "Estoptask", 2000, NULL, 1, &taskHandle2, 0); //cantask
     /* Start the scheduler so the tasks start executing. */
+    for(;;){
+        printf("Cantask watermark: %d\n", uxTaskGetStackHighWaterMark(taskHandle1));
+        printf("Estoptask watermark: %d\n", uxTaskGetStackHighWaterMark(taskHandle2));
+        vTaskDelay(250/portTICK_PERIOD_MS);
+    }
 }
